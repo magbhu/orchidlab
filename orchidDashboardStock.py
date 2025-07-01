@@ -18,7 +18,7 @@ def load_translations(language):
 def load_data():
     url = "https://github.com/magbhu/orchidlab/blob/main/portfolio.csv"
     # url = "https://raw.githubusercontent.com/your-username/your-repo/main/data/portfolio.csv"  # Replace with your actual GitHub raw link
-    return pd.read_csv(portfolio.csv)
+    return pd.read_csv("portfolio.csv")
 
 # Translate UI elements
 def t(key, lang_dict):
