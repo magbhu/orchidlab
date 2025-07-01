@@ -1,0 +1,9 @@
+broker name,family member name,stock code,sector code,portfolio metrics code,quantity,invested amount,current value,holding period days
+Zerodha,Ravi,TCS,IT,0.9,10,35000,42000,365
+ICICI Direct,Meena,HDFC,Banking,1.1,15,39000,46000,720
+Upstox,Arun,INFY,IT,0.85,20,28000,30000,180
+Zerodha,Ravi,HDFCLIFE,Insurance,1.2,5,3000,3200,60
+ICICI Direct,Meena,TATAMOTORS,Auto,1.05,12,9600,11000,300
+Groww,Sudha,SBI,Banking,1.0,25,11250,12500,450
+Upstox,Arun,RELIANCE,Energy,1.15,8,18400,19600,600
+Groww,Sudha,ITC,FMCG,0.95,30,7500,8800,250

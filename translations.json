@@ -1,0 +1,24 @@
+{
+  "English": {
+    "Stock Portfolio Dashboard": "Stock Portfolio Dashboard",
+    "Sort Portfolio By": "Sort Portfolio By",
+    "Family Member": "Family Member",
+    "Sector": "Sector",
+    "Broker": "Broker",
+    "Stock Code": "Stock Code",
+    "Summary by": "Summary by",
+    "Show Full Data": "Show Full Data",
+    "Download Data as CSV": "Download Data as CSV"
+  },
+  "Tamil": {
+    "Stock Portfolio Dashboard": "பங்குச் சொத்து டாஷ்போர்டு",
+    "Sort Portfolio By": "வரிசைப்படுத்து",
+    "Family Member": "குடும்ப உறுப்பினர்",
+    "Sector": "துறை",
+    "Broker": "மத்தியஸ்தர்",
+    "Stock Code": "பங்கு குறியீடு",
+    "Summary by": "சுருக்கமான தகவல் - ",
+    "Show Full Data": "முழு தரவை காட்டு",
+    "Download Data as CSV": "CSV-ஆக தரவிறக்கவும்"
+  }
+}
