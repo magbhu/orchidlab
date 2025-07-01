@@ -16,9 +16,8 @@ def load_translations(language):
 # Load CSV data
 @st.cache_data
 def load_data():
-    url = "https://github.com/magbhu/orchidlab/blob/main/portfolio.csv"
-    # url = "https://raw.githubusercontent.com/your-username/your-repo/main/data/portfolio.csv"  # Replace with your actual GitHub raw link
-    return pd.read_csv("portfolio.csv")
+    url = "https://raw.githubusercontent.com/your-username/your-repo/main/data/portfolio.csv"  # Replace with your actual GitHub raw link
+    return pd.read_csv(url)
 
 # Translate UI elements
 def t(key, lang_dict):
@@ -32,6 +31,40 @@ lang_dict = load_translations(language)
 # Main dashboard
 st.title(t("Stock Portfolio Dashboard", lang_dict))
 data = load_data()
+
+# Filter selection options
+st.sidebar.subheader(t("Filter Portfolio", lang_dict))
+reset_filters = st.sidebar.button(t("Reset Filters", lang_dict))
+
+if "filters_applied" not in st.session_state or reset_filters:
+    st.session_state.filters_applied = {
+        "family": [],
+        "broker": [],
+        "sector": [],
+        "stock": []
+    }
+
+st.session_state.filters_applied["family"] = st.sidebar.multiselect(
+    t("Family Member", lang_dict), options=sorted(data["family member name"].unique()), default=st.session_state.filters_applied["family"])
+
+st.session_state.filters_applied["broker"] = st.sidebar.multiselect(
+    t("Broker", lang_dict), options=sorted(data["broker name"].unique()), default=st.session_state.filters_applied["broker"])
+
+st.session_state.filters_applied["sector"] = st.sidebar.multiselect(
+    t("Sector", lang_dict), options=sorted(data["sector code"].unique()), default=st.session_state.filters_applied["sector"])
+
+st.session_state.filters_applied["stock"] = st.sidebar.multiselect(
+    t("Stock Code", lang_dict), options=sorted(data["stock code"].unique()), default=st.session_state.filters_applied["stock"])
+
+# Apply filters
+if st.session_state.filters_applied["family"]:
+    data = data[data["family member name"].isin(st.session_state.filters_applied["family"])]
+if st.session_state.filters_applied["broker"]:
+    data = data[data["broker name"].isin(st.session_state.filters_applied["broker"])]
+if st.session_state.filters_applied["sector"]:
+    data = data[data["sector code"].isin(st.session_state.filters_applied["sector"])]
+if st.session_state.filters_applied["stock"]:
+    data = data[data["stock code"].isin(st.session_state.filters_applied["stock"])]
 
 # Selection options
 sort_options = {
@@ -83,34 +116,6 @@ if "portfolio metrics code" in data.columns:
                          color="average metrics", color_continuous_scale="Greens")
     st.plotly_chart(metrics_bar)
 
-    # Export charts as images
-    st.subheader(t("Export Charts", lang_dict))
-    export_format = st.selectbox("Choose format to export", ["PNG", "PDF"])
-
-    pie_bytes = pie_chart.to_image(format="png")
-    bar_bytes = bar_chart.to_image(format="png")
-    metrics_bytes = metrics_bar.to_image(format="png")
-
-    if export_format == "PNG":
-        st.download_button(label="Download Pie Chart (PNG)", data=pie_bytes, file_name="pie_chart.png", mime="image/png")
-        st.download_button(label="Download Bar Chart (PNG)", data=bar_bytes, file_name="bar_chart.png", mime="image/png")
-        st.download_button(label="Download Metrics Chart (PNG)", data=metrics_bytes, file_name="metrics_chart.png", mime="image/png")
-
-    elif export_format == "PDF":
-        pdf = FPDF()
-        pdf.add_page()
-        for chart_bytes in [pie_bytes, bar_bytes, metrics_bytes]:
-            img = BytesIO(chart_bytes)
-            pdf.image(img, x=10, y=pdf.get_y(), w=180)
-            pdf.ln(85)
-        pdf_buffer = BytesIO()
-        pdf.output(pdf_buffer)
-        st.download_button(label="Download All Charts (PDF)", data=pdf_buffer.getvalue(), file_name="portfolio_charts.pdf", mime="application/pdf")
-
 # Show full data toggle
 if st.checkbox(t("Show Full Data", lang_dict)):
     st.write(data)
-
-# Add download option
-csv = sorted_data.to_csv(index=False).encode("utf-8")
-st.download_button(label=t("Download Data as CSV", lang_dict), data=csv, file_name="sorted_portfolio.csv", mime="text/csv")
