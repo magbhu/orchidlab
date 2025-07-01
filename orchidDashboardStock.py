@@ -17,7 +17,7 @@ def load_translations(language):
 # Load CSV data
 @st.cache_data
 def load_data():
-    #url = "https://raw.githubusercontent.com/your-username/your-repo/main/data/portfolio.csv"  # Replace with your actual GitHub raw link
+    url = "https://raw.githubusercontent.com/your-username/your-repo/main/data/portfolio.csv"  # Replace with your actual GitHub raw link
     df = pd.read_csv("portfolio.csv")
     df["transaction date"] = pd.to_datetime(df["transaction date"])
     df["holding period days"] = (pd.Timestamp.today() - df["transaction date"]).dt.days
@@ -81,21 +81,28 @@ sort_options = {
 sort_choice = st.selectbox(t("Sort Portfolio By", lang_dict), list(sort_options.keys()))
 sort_field = sort_options[sort_choice]
 
-# Sort and display
+# Sort data
 sorted_data = data.sort_values(by=[sort_field])
-st.dataframe(sorted_data)
 
-# Summary section
+# Summary section (moved to top)
 st.subheader(t("Summary by", lang_dict) + f" {sort_choice}")
 summary = sorted_data.groupby(sort_field).agg({
-    "quantity": "sum",
     "invested amount": "sum",
-    "current value": "sum",
-    "holding period days": "mean"
+    "current value": "sum"
 }).reset_index()
 
 summary["return (%)"] = ((summary["current value"] - summary["invested amount"]) / summary["invested amount"]) * 100
+summary["invested amount"] = summary["invested amount"].apply(lambda x: f"₹{x:,.0f}")
+summary["current value"] = summary["current value"].apply(lambda x: f"₹{x:,.0f}")
+summary["return (%)"] = summary["return (%)"].apply(lambda x: f"{x:.2f}%")
+summary.index = summary.index + 1
+summary.reset_index(inplace=True)
+summary.rename(columns={"index": "S.No"}, inplace=True)
 st.dataframe(summary)
+
+# Display sorted data
+st.subheader(t("Detailed Portfolio Data", lang_dict))
+st.dataframe(sorted_data)
 
 # Pie chart of current value distribution
 st.subheader(t("Current Value Distribution", lang_dict))
