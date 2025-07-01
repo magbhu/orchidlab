@@ -16,8 +16,9 @@ def load_translations(language):
 # Load CSV data
 @st.cache_data
 def load_data():
-    url = "https://raw.githubusercontent.com/your-username/your-repo/main/data/portfolio.csv"  # Replace with your actual GitHub raw link
-    return pd.read_csv(url)
+    #url = "https://raw.githubusercontent.com/your-username/your-repo/main/data/portfolio.csv"  # Replace with your actual GitHub raw link
+    #return pd.read_csv(url)
+    return pd.read_csv("portfolio.csv")
 
 # Translate UI elements
 def t(key, lang_dict):
