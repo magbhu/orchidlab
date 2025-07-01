@@ -5,6 +5,7 @@ import plotly.express as px
 import plotly.io as pio
 from io import BytesIO
 from fpdf import FPDF
+from datetime import datetime
 
 # Load translation
 @st.cache_data
@@ -17,8 +18,10 @@ def load_translations(language):
 @st.cache_data
 def load_data():
     #url = "https://raw.githubusercontent.com/your-username/your-repo/main/data/portfolio.csv"  # Replace with your actual GitHub raw link
-    #return pd.read_csv(url)
-    return pd.read_csv("portfolio.csv")
+    df = pd.read_csv("portfolio.csv")
+    df["transaction date"] = pd.to_datetime(df["transaction date"])
+    df["holding period days"] = (pd.Timestamp.today() - df["transaction date"]).dt.days
+    return df
 
 # Translate UI elements
 def t(key, lang_dict):
