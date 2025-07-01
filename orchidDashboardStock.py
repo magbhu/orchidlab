@@ -91,18 +91,40 @@ summary = sorted_data.groupby(sort_field).agg({
     "current value": "sum"
 }).reset_index()
 
-summary["return (%)"] = ((summary["current value"] - summary["invested amount"]) / summary["invested amount"]) * 100
+summary["return_raw"] = ((summary["current value"] - summary["invested amount"]) / summary["invested amount"]) * 100
 summary["invested amount"] = summary["invested amount"].apply(lambda x: f"₹{x:,.0f}")
 summary["current value"] = summary["current value"].apply(lambda x: f"₹{x:,.0f}")
-summary["return (%)"] = summary["return (%)"].apply(lambda x: f"{x:.2f}%")
+summary["return (%)"] = summary["return_raw"].apply(lambda x: f"{x:.2f}%")
+summary = summary.drop(columns="return_raw")
+
+# Add total row
+total_row = {sort_field: "Total",
+             "invested amount": f"₹{data['invested amount'].sum():,.0f}",
+             "current value": f"₹{data['current value'].sum():,.0f}",
+             "return (%)": f"{((data['current value'].sum() - data['invested amount'].sum()) / data['invested amount'].sum()) * 100:.2f}%"}
+summary = pd.concat([summary, pd.DataFrame([total_row])], ignore_index=True)
+
 summary.index = summary.index + 1
 summary.reset_index(inplace=True)
 summary.rename(columns={"index": "S.No"}, inplace=True)
 st.dataframe(summary)
 
-# Display sorted data
+# Display sorted data with formatting
 st.subheader(t("Detailed Portfolio Data", lang_dict))
-st.dataframe(sorted_data)
+display_data = sorted_data.copy()
+display_data["invested amount"] = display_data["invested amount"].apply(lambda x: f"₹{x:,.0f}")
+display_data["current value"] = display_data["current value"].apply(lambda x: f"₹{x:,.0f}")
+display_data["return (%)"] = ((sorted_data["current value"] - sorted_data["invested amount"]) / sorted_data["invested amount"]) * 100
+display_data["return (%)"] = display_data["return (%)"].apply(lambda x: f"{x:.2f}%")
+
+# Highlight negative returns
+def highlight_negative(val):
+    try:
+        return 'color: red' if float(val.replace('%','')) < 0 else ''
+    except:
+        return ''
+
+st.dataframe(display_data.style.applymap(highlight_negative, subset=["return (%)"]))
 
 # Pie chart of current value distribution
 st.subheader(t("Current Value Distribution", lang_dict))
